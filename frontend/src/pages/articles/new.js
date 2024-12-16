@@ -1,23 +1,59 @@
 import mustache from 'mustache';
-// Viteのルールとして、インポートする対象のファイルをそのまま取得するためには相対パスの末尾に"?raw"を付与する必要がある
-// この場合、テンプレートのHTMLファイルをそのまま取得したいので"?raw"を末尾に付与している
-// 参照: https://ja.vite.dev/guide/assets.html#importing-asset-as-string
 import html from '../../templates/articles/new.html?raw';
+import { marked } from 'marked';  // MarkdownをHTMLに変換するためのライブラリ
 
-// 当授業ではCSRF攻撃に対して脆弱なコードとなっていますが、実装が煩雑になるので考慮せずに実装しますが
-// 実際にログインを伴うサイト等でフォーム送信などを行う処理にはCSRF攻撃に対する対策CSRFトークンも含めるなどの対策を実施してください
-// 参考: https://developer.mozilla.org/ja/docs/Glossary/CSRF
-
-/**
- * 記事新規作成時の処理の関数
- */
 export const articlesNew = () => {
   const app = document.querySelector('#app');
-  // templates/articles/new.html を <div id="app"></div> 要素内に出力する
   app.innerHTML = mustache.render(html, {});
 
-  // TODO: new.htmlにかかれているHTMLに入力の変更があったら画面右側のプレビューの内容を入力した内容に応じたものに変換する
-  // 処理...
-  
-  // "公開" ボタンを押下された際にPOSTメソッドで /api/v1/articles に対してAPI通信を fetch で送信する
+  const textarea = document.querySelector('#editor-textarea');
+  const previewArea = document.querySelector('#preview-area');
+
+  // テキストエリアの内容をプレビューに反映する関数
+  const updatePreview = () => {
+    const markdownText = textarea.value;
+    const htmlContent = marked(markdownText);  // MarkdownをHTMLに変換
+    previewArea.innerHTML = htmlContent;  // プレビューエリアに反映
+  };
+
+  // テキストエリアの入力が変更される度にプレビューを更新
+  textarea.addEventListener('input', updatePreview);
+
+  // 初期プレビューを設定
+  updatePreview();
+
+  // 保存ボタンのクリックイベント
+  const saveButton = document.querySelector('#submit');
+  saveButton.addEventListener('click', () => {
+    // フォームからタイトルと本文を取得
+    const title = document.querySelector('input[name="title"]').value;
+    const body = textarea.value;
+
+    // 保存するデータを構造化
+    const articleData = {
+      title: title,
+      body: body
+    };
+    
+
+    // APIにPOSTリクエストを送信
+    fetch('/api/v1/articles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'  // リクエストの内容がJSONであることを指定
+      },
+      body: JSON.stringify(articleData)  // JSONとしてリクエストボディにデータを送る
+    })
+    .then(response => {
+      if (response.ok) {
+        alert('記事が保存されました');
+      } else {
+        alert('保存に失敗しました');
+      }
+    })
+    .catch(error => {
+      console.error('エラー:', error);
+      alert('エラーが発生しました');
+    });
+  });
 };
