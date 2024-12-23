@@ -1,0 +1,40 @@
+<h1>{{=<% %>=}}{{mustache}}<%={{ }}=%>練習問題</h1>
+<div>
+  Mustacheの使い方は
+  <a href="https://github.com/janl/mustache.js?tab=readme-ov-file">
+    https://github.com/janl/mustache.js?tab=readme-ov-file
+  </a>
+  参照
+</div>
+
+<h4>課題1: mustacheに渡した変数 "fullname" をそのまま表示してください</h4>
+<h6>回答1: <span><!--ここにmustacheを書く--></span></h6>
+
+<h4>課題2: mustacheに渡した変数 "company" をエスケープ処理せずそのまま表示してください</h4>
+<h6>回答2: <span><!--ここにmustacheを書く--></span></h6>
+<div>
+  ヒント1: <b>GitHub</b>と表示されれば⭕<br />
+  ヒント2: &lt;b&gt;GitHub&lt;/b&gt;と表示されたらエスケープされた状態となり❌️
+</div>
+
+<h4>課題3: mustacheに渡した変数 "name" のオブジェクト内の "first" と "last" の値をスペースを空けて表示してください</h4>
+<h6>回答3: <span><!--ここに Michael Jackson と表示されるようにmustacheを書く--></span></h6>
+
+<h4>課題4: mustacheに渡した変数 "today" の値を "2024年12月23日" というフォーマットで表示してください</h4>
+<h6>回答4: <span><!--ここに Michael Jackson と表示されるようにmustacheを書く--></span></h6>
+<div>
+  ヒント: "today" で渡している <code>new Date()</code> オブジェクトを指定のフォーマットに変換する処理は既にmustacheに渡しているので、それをどのように記述すれば表示されるかを考えれば良さそう。
+</div>
+
+<h4>課題5: 47都道府県をmustache構文のループを用いて実装してください</h4>
+<div>prefectures 変数で47都道府県の文字列配列は定義しているので、それを用いたループ処理をmustache構文で記述してください</div>
+<div>optionのvalue属性の値 1～9 は2桁のゼロ埋め（01, 02...09）を行うようにしてください（JS側の調整が必要です）。</div>
+<h6>回答5: ※以下のselect, option要素のHTMLを参考にしつつ、書き換えて作成してください</h6>
+<select name="prefectures" id="prefectures">
+  <option value="01">北海道</option>
+  <option value="02">青森県</option>
+  <option>...中略...</option>
+  <option value="13">東京都</option>
+  <option>...中略...</option>
+  <option value="47">沖縄県</option>
+</select>

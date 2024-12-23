@@ -220,7 +220,10 @@ app.post('/api/v1/articles', async (req, res) => {
 // サイトに登録されている記事を全て取得するAPI
 app.get('/api/v1/articles', async (_, res) => {
   await prisma.article
-    .findMany()
+    .findMany({
+      include: { user: { select: { username: true } } },
+      orderBy: { createdAt: 'desc' },
+    })
     .then(record => res.json({ isSuccess: true, items: record }))
     .catch(error => {
       console.error(error);

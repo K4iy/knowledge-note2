@@ -20,6 +20,12 @@ let _routes = null;
 let _on = null;
 
 /**
+ * @type { null | (any) => any } current_target
+ * クリーンアップ処理を受け取る箇所
+ */
+let _current_target = null;
+
+/**
  * URLに応じて呼び出す関数を切り替えるルーターの初期化
  * @param { { path: string, fn: Function }[] } routes パスとパスにマッチした際に実行する関数をペアにしたオブジェクトリテラル
  * @param { { onNotFound: Function, onBefore: () => any, onAfter: () => any } } on 
@@ -79,34 +85,50 @@ export const findRoute = (url) => {
 };
 
 export const navigate = (url) => {
-  document.querySelector('#app').innerHTML = '';
-  if (location.pathname !== url) {
-    history.pushState({}, '', url);
+  // 別ページに遷移する際に行うクリーンアップ処理を実行する
+  let fn = null;
+  if (_current_target instanceof Promise) {
+    fn = _current_target;
+  } else {
+    fn = Promise.resolve(_current_target);
   }
 
-  const { pathname } = location;
-  const target = findRoute(pathname);
+  fn
+    .then(res => {
+      if (typeof res === 'function') {
+        res();
+      }
+    })
+    .then(() => {
+      document.querySelector('#app').innerHTML = '';
+      if (location.pathname !== url) {
+        history.pushState({}, '', url);
+      }
 
-  // 前処理
-  if (typeof _on.onBefore === 'function') {
-    _on.onBefore();
-  }
-  // 本処理
-  console.debug('Router target: %o', target);
-  // URLにマッチする処理が定義されていたら
-  if (target) {
-    target.fn();
-  }
-  // URLにマッチする処理がなくて onNotFound の処理が定義されていたら
-  else if (typeof _on.onNotFound === 'function') {
-    _on.onNotFound();
-  }
-  // いずれの処理も定義していない場合
-  else {
-    console.error('Target route not found.');
-  }
-  // 後処理
-  if (typeof _on.onAfter === 'function') {
-    _on.onAfter();
-  }
+      const { pathname } = location;
+      const target = findRoute(pathname);
+
+      // 前処理
+      if (typeof _on.onBefore === 'function') {
+        _on.onBefore();
+      }
+      // 本処理
+      console.debug('Router target: %o', target);
+      // URLにマッチする処理が定義されていたら
+      if (target) {
+        _current_target = target.fn();
+      }
+      // URLにマッチする処理がなくて onNotFound の処理が定義されていたら
+      else if (typeof _on.onNotFound === 'function') {
+        _on.onNotFound();
+      }
+      // いずれの処理も定義していない場合
+      else {
+        console.error('Target route not found.');
+      }
+      // 後処理
+      if (typeof _on.onAfter === 'function') {
+        _on.onAfter();
+      }
+    });
 };

@@ -1,59 +1,75 @@
 import mustache from 'mustache';
 import html from '../../templates/articles/new.html?raw';
-import { marked } from 'marked';  // MarkdownをHTMLに変換するためのライブラリ
+
+// 当授業ではCSRF攻撃に対して脆弱なコードとなっていますが、実装が煩雑になるので考慮せずに実装しますが
+// 実際にログインを伴うサイト等でフォーム送信などを行う処理にはCSRF攻撃に対する対策CSRFトークンも含めるなどの対策を実施してください
+// 参考: https://developer.mozilla.org/ja/docs/Glossary/CSRF
+
+// HTMLを無害化（サニタイズ）するライブラリをインポート
+import DOMPurify from 'dompurify';
+// Markdown形式の文字列をHTML形式の文字列にするライブラリをインポート
+import { parse } from 'marked';
+// URL遷移するための関数をインポート
+import { navigate } from '../../utils/router';
 
 export const articlesNew = () => {
   const app = document.querySelector('#app');
   app.innerHTML = mustache.render(html, {});
 
-  const textarea = document.querySelector('#editor-textarea');
-  const previewArea = document.querySelector('#preview-area');
 
-  // テキストエリアの内容をプレビューに反映する関数
-  const updatePreview = () => {
-    const markdownText = textarea.value;
-    const htmlContent = marked(markdownText);  // MarkdownをHTMLに変換
-    previewArea.innerHTML = htmlContent;  // プレビューエリアに反映
+  /**
+   * 入力した本文のMarkdownを画面右側にプレビューするための処理
+   * @param {Event} event フォームがsubmitされた際の処理
+   */
+  const contnetPreview = (event) => {
+    // textarea の値を取得
+    const value = event.target.value;
+    // textarea の値をまずはHTML形式に変換して、その後にHTMLで有害と思わしき処理をトルツメする
+    const previewHTML = DOMPurify.sanitize(parse(value));
+    // 動作確認
+    console.debug(previewHTML);
+    // プレビューエリアに反映する
+    document.querySelector('#preview-area').innerHTML = previewHTML;
   };
 
-  // テキストエリアの入力が変更される度にプレビューを更新
-  textarea.addEventListener('input', updatePreview);
+  // id属性が"editor-textarea"な要素が画面に出力されてから実行する必要があるので
+  // app.innerHTMLの下に実装する必要がある。
+  document.querySelector('#editor-textarea').addEventListener('input', contnetPreview);
 
-  // 初期プレビューを設定
-  updatePreview();
 
-  // 保存ボタンのクリックイベント
-  const saveButton = document.querySelector('#submit');
-  saveButton.addEventListener('click', () => {
-    // フォームからタイトルと本文を取得
-    const title = document.querySelector('input[name="title"]').value;
-    const body = textarea.value;
+  /**
+   * コンテンツ保存時の処理
+   * @param {Event} event 
+   */
+  const formSubmit = (event) => {
+    // ブラウザ上でページ遷移するのを防ぐ、代わりに後続のJS処理でform送信処理を行う
+    event.preventDefault();
 
-    // 保存するデータを構造化
-    const articleData = {
-      title: title,
-      body: body
-    };
-    
-
-    // APIにPOSTリクエストを送信
+    // form 要素内にある name 属性が title と body なフォーム要素を取得する
+    const { title, body } = event.target;
     fetch('/api/v1/articles', {
+      headers: { 'content-type': 'application/json' },
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'  // リクエストの内容がJSONであることを指定
-      },
-      body: JSON.stringify(articleData)  // JSONとしてリクエストボディにデータを送る
+      body: JSON.stringify({ title: title.value, body: body.value }),
     })
-    .then(response => {
-      if (response.ok) {
-        alert('記事が保存されました');
-      } else {
-        alert('保存に失敗しました');
-      }
-    })
-    .catch(error => {
-      console.error('エラー:', error);
-      alert('エラーが発生しました');
-    });
-  });
+      .then(res => res.json())
+      .then(json => {
+        if (json.isSuccess) {
+          navigate('/');
+        } else {
+          console.error(json);
+        }
+      });
+  };
+
+
+  // id属性が"articles-new-form"な要素が画面に出力されてから実行する必要があるので
+  // app.innerHTMLの下に実装する必要がある。
+  document.querySelector('#articles-new-form').addEventListener('submit', formSubmit);
+
+  // このページ /articles/new から遷移する際に実行する処理
+  return () => {
+    document.querySelector('#editor-textarea').removeEventListener('input', contnetPreview);
+    document.querySelector('#articles-new-form').removeEventListener('submit', formSubmit);
+  };
 };

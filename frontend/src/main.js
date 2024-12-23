@@ -8,6 +8,7 @@ import { bootstrap } from './core/bootstrap';
 import { mypage } from './pages/mypage';
 import { userCheck } from './utils/user-check';
 import { articlesNew } from './pages/articles/new';
+import { learningMustache } from './pages/learning/mustache';
 
 bootstrap(
   router(
@@ -18,6 +19,7 @@ bootstrap(
       { path: '/articles/:id', fn: ({ id }) => { /* 未実装 */ } },
       { path: '/register', fn: guestCheck(register) },
       { path: '/login', fn: guestCheck(login) },
+      { path: '/learning/mustache', fn: learningMustache },
     ],
     {
       onNotFound: () => console.log('NOT FOUND'),

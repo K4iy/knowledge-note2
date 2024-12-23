@@ -145,8 +145,8 @@ paths:
                         "title": "記事タイトル",
                         "body": "# 見出し\n\n本文",
                         "createdAt": "2024-12-15T08:18:31.990Z",
-                        "updatedAt": "2024-12-15T08:18:31.990Z"
-                      }
+                        "updatedAt": "2024-12-15T08:18:31.990Z",
+                      },
                   }
     get:
       summary: "記事一覧取得"
@@ -181,6 +181,12 @@ paths:
                         updatedAt:
                           type: string
                           example: "2024-12-15T06:49:23.653Z"
+                        user:
+                          type: object
+                          properties:
+                            username:
+                              type: string
+                              example: "example"
                 example:
                   {
                     "isSuccess": true,
@@ -192,6 +198,7 @@ paths:
                           "body": "# Markdown形式のテキスト\n\n本文",
                           "createdAt": "2024-12-14T06:49:23.653Z",
                           "updatedAt": "2024-12-14T06:49:23.653Z",
+                          "user": { "username": "example" },
                         },
                         {
                           "id": "201f447f-acef-4463-8cc6-5c359f9b9d0f",
@@ -199,6 +206,7 @@ paths:
                           "body": "# Markdown形式のテキスト\n\n本文",
                           "createdAt": "2024-12-15T06:49:23.653Z",
                           "updatedAt": "2024-12-15T06:49:23.653Z",
+                          "user": { "username": "example" },
                         },
                       ],
                   }
