@@ -231,6 +231,31 @@ app.get('/api/v1/articles', async (_, res) => {
     });
 });
 
+// サイトに登録されている記事をAPIのパスパラメータ uuid の部分の文字列を取得し
+// その文字列とDBに保存されている記事情報の主キーが一致するものを取得するAPI
+app.get('/api/v1/articles/:uuid', async (req, res) => {
+  const uuid = req.params.uuid;
+  await prisma.article
+    .findUniqueOrThrow({
+      where: { id: uuid },
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true
+          }
+        }
+      },    
+    })
+    // 正常に取得できた場合
+    .then(record => res.json({ isSuccess: true, item: record }))
+    // 何かしらの原因で正常に取得できなかった場合
+    .catch(error => {
+      console.error(error);
+      res.status(status.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({ isSuccess: false, message: '記事取得失敗' })
+    });
+});
+
 // サーバーを起動
 const PORT = 3000;
 app.listen(PORT, () => console.debug(`Server is running on http://localhost:${PORT}`));

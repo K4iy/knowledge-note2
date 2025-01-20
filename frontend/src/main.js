@@ -9,6 +9,7 @@ import { mypage } from './pages/mypage';
 import { userCheck } from './utils/user-check';
 import { articlesNew } from './pages/articles/new';
 import { learningMustache } from './pages/learning/mustache';
+import { articlesId } from './pages/articles/id';
 
 bootstrap(
   router(
@@ -16,7 +17,7 @@ bootstrap(
       { path: '/', fn: home },
       { path: '/mypage', fn: userCheck(mypage) },
       { path: '/articles/new', fn: userCheck(articlesNew) },
-      { path: '/articles/:id', fn: ({ id }) => { /* 未実装 */ } },
+      { path: '/articles/:id', fn: articlesId },
       { path: '/register', fn: guestCheck(register) },
       { path: '/login', fn: guestCheck(login) },
       { path: '/learning/mustache', fn: learningMustache },

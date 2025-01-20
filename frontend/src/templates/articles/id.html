@@ -1,0 +1,26 @@
+<style>
+    dl {
+        font-size: 0.85em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    dd {
+        margin: 0;
+        margin-right: 1rem;
+    }
+</style>
+<article>
+    <h1>{{ title }}</h1>
+    <dl>
+        <dt>作者</dt>
+        <dd><a href="/users/{{ user.id }}">{{ user.username }}</a></dd>
+        <dt>作成日</dt>
+        <dd><time datetime="{{ createdAt }}">{{ displayCreatedAt }}</time></dd>
+        <dt>更新日</dt>
+        <dd><time datetime="{{ updatedAt }}">{{ displayUpdatedAt }}</time></dd>
+    </dl>
+    <div>
+        {{{ body }}}
+    </div>
+</article>

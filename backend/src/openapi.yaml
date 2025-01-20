@@ -210,7 +210,70 @@ paths:
                         },
                       ],
                   }
-
+  /api/v1/articles/{uuid}:
+    get:
+      summary: "記事詳細取得"
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: 取得する対象の記事のUUID
+          example: fe13f940-2c14-4835-a148-590c162fe32c
+      responses:
+        200:
+          description: "記事詳細取得のレスポンス"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isSuccess:
+                    type: boolean
+                    example: true
+                  item:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        example: "b7060167-df6c-41eb-829a-30e2d6d679d5"
+                      title:
+                        type: string
+                        example: "コンテンツタイトル1"
+                      body:
+                        type: string
+                        example: "# Markdown形式のテキスト\n\n本文"
+                      createdAt:
+                        type: string
+                        example: "2024-12-15T06:49:23.653Z"
+                      updatedAt:
+                        type: string
+                        example: "2024-12-15T06:49:23.653Z"
+                      user:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: "94fbd3f5-e175-4817-8da9-9ccac2a0a956"                          
+                          username:
+                            type: string
+                            example: "example"
+                example:
+                  {
+                    "isSuccess": true,
+                    "item": {
+                      "id": "b7060167-df6c-41eb-829a-30e2d6d679d5",
+                      "title": "コンテンツタイトル1",
+                      "body": "# Markdown形式のテキスト\n\n本文",
+                      "createdAt": "2024-12-14T06:49:23.653Z",
+                      "updatedAt": "2024-12-14T06:49:23.653Z",
+                      "user": { 
+                        "id": "94fbd3f5-e175-4817-8da9-9ccac2a0a956",
+                        "username": "example" 
+                      },
+                    }
+                  }
 components:
   securitySchemes:
     cookieAuth:
