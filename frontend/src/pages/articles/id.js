@@ -12,29 +12,33 @@ import { parse } from 'marked';
  */
 export const articlesId = ({ id }) => {
     const app = document.querySelector('#app');
-    // templates/articles/id.html を <div id="app"></div> 要素内に出力する
-    app.innerHTML = mustache.render(html, {
-        title: 'テストタイトル',
-        createdAt: '2024-12-16T02:59:58.271Z',
-        displayCreatedAt: function () {
-            /* @todo 上の行にある createdAt の値をJSのDateオブジェクトを用いて
-            2025/01/19 のようなフォーマットに変換した文字列をセット */
-            console.log(this);
-            return '2024/12/16';
-        },
-        updatedAt: '2024-12-16T02:59:58.271Z',
-        displayUpdatedAt: function () {
-            /* @todo 上の行にある updatedAt の値をJSのDateオブジェクトを用いて
-            2025/01/19 のようなフォーマットに変換した文字列をセット */
-            console.log(this);
-            return '2024/12/16';
-        },
-        user: {
-            id: '94fbd3f5-e175-4817-8da9-9ccac2a0a956',
-            username: '@example',
-        },
-        body: '<h1>見出し</h1><p>テキストテキストテキスト</p>'
-    });
+    fetch(`/api/v1/articles/${id}`, { method: 'GET' })
+        .then(response => response.json())
+        .then(json => {
+            const app = document.querySelector('#app');
+            // templates/articles/id.html を <div id="app"></div> 要素内に出力する
+            app.innerHTML = mustache.render(html, {
+                title: json.item.title,
+                createdAt: json.item.createdAt,
+                displayCreatedAt: function () {
+                    const d = new Date(this.createdAt);
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    const date = d.getDate();
+                    return `${year}/${month}/${date}`;
+                },
+                updatedAt: json.item.updatedAt,
+                displayUpdatedAt: function () {
+                    const d = new Date(this.updatedAt);
+                    const year = d.getFullYear();
+                    const month = d.getMonth() + 1;
+                    const date = d.getDate();
+                    return `${year}/${month}/${date}`;
+                },
+                user: json.item.user,
+                body: DOMPurify.sanitize(parse(json.item.body)),
+            });
+        });   
     // このページ /articles/:id から遷移する際に実行する処理
     return () => {
     };
