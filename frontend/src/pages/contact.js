@@ -10,11 +10,11 @@ export const contact = () => {
     .addEventListener('submit', e => {
       // イベント無効化
       e.preventDefault();
-
       /** @type {HTMLButtonElement} */
       const button = e.target.querySelector('button[type="submit"]');
       button.disabled = true;
       const data = Object.fromEntries(new FormData(e.target).entries());
+      console.log("あじゃは")
       fetch('/api/v1/contact', {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(data),
@@ -22,7 +22,10 @@ export const contact = () => {
       })
         .then(res =>
           new Promise((resolve, reject) => res.ok ? resolve(res.json()) : reject(res.text())))
-        .then(json => console.log(json))
+        .then(json => {
+            console.log(json);
+            alert("送信完了");
+        })
         .catch(err => console.error(err))
         .finally(() => {
           button.disabled = false;

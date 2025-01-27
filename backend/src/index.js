@@ -255,6 +255,43 @@ app.get('/api/v1/articles/:uuid', async (req, res) => {
       res.status(status.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({ isSuccess: false, message: '記事取得失敗' })
     });
 });
+// app.get('/api/v1/contact', async (req, res) => {
+//   console.log(req.body);
+// });
+
+app.post('/api/v1/contact', async (req, res) => {
+  console.log(req.body);
+  // const { email, password, username } = req.body;
+  // await prisma.user
+  //   .create({
+  //     select: {
+  //       id: true,
+  //       email: true,
+  //       username: true,
+  //     },
+  //     data: {
+  //       email,
+  //       username,
+  //       password: hashSync(password, 10),
+  //     }
+  //   })
+  //   .then(record => new Promise((res, rej) => {
+  //     req.session.regenerate((err) => {
+  //       if (err) return rej(err);
+  //       return res(record);
+  //     });
+  //   }))
+  //   .then(record => {
+  //     req.session.user = record;
+  //     res.cookie('user.id', record.id, { maxAge: _1h });
+  //     res.cookie('user.username', record.username, { maxAge: _1h });
+  //     res.json({ isSuccess: true, message: 'OK' });
+  //   })
+  //   .catch(err => {
+  //     console.error(err);
+  //     res.status(status.HTTP_STATUS_INTERNAL_SERVER_ERROR).json({ isSuccess: false, message: '不明なエラーが発生しました' })
+  //   });
+});
 
 // サーバーを起動
 const PORT = 3000;
