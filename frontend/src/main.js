@@ -10,6 +10,8 @@ import { userCheck } from './utils/user-check';
 import { articlesNew } from './pages/articles/new';
 import { learningMustache } from './pages/learning/mustache';
 import { articlesId } from './pages/articles/id';
+import { contact } from './pages/contact';
+
 
 bootstrap(
   router(
@@ -21,6 +23,7 @@ bootstrap(
       { path: '/register', fn: guestCheck(register) },
       { path: '/login', fn: guestCheck(login) },
       { path: '/learning/mustache', fn: learningMustache },
+      { path: '/contact', fn: contact },
     ],
     {
       onNotFound: () => console.log('NOT FOUND'),
